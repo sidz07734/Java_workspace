@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CodeSpace</title>
+  <link rel="stylesheet" href="codespace.css" />
+</head>
+<body>
+  <div class="header">
+    <h2>Welcome to CodeSpace</h2>
+    <button id="logoutBtn" onclick="logout()">Logout</button>
+  </div>
+  <div class="container">
+    <textarea id="codeInput" placeholder="Paste Java code here..."></textarea>
+    <div class="buttons">
+      <button onclick="analyzeCode()">Analyze Code</button>
+      <button onclick="saveCode()">Save Code</button>
+    </div>
+    <pre id="result"></pre>
+  </div>
+
+  <script src="codespace.js"></script>
+</body>
+</html>
