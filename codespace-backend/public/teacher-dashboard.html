@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Teacher Dashboard - CodeSpace</title>
+  <link rel="stylesheet" href="teacher-dashboard.css" />
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Teacher Dashboard</h1>
+      <button id="logoutBtn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="stats-container">
+      <div class="stat-box">
+        <h3>Total Students</h3>
+        <p id="totalStudents">Loading...</p>
+      </div>
+      <div class="stat-box">
+        <h3>Code Submissions</h3>
+        <p id="totalSubmissions">Loading...</p>
+      </div>
+      <div class="stat-box">
+        <h3>Active Today</h3>
+        <p id="activeToday">Loading...</p>
+      </div>
+    </div>
+    
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search by student username...">
+      <button onclick="searchStudent()">Search</button>
+      <button onclick="loadAllStudents()">Show All</button>
+    </div>
+    
+    <div class="student-list">
+      <h2>Student Activities</h2>
+      <table id="studentTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Submissions</th>
+            <th>Last Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentTableBody">
+          <!-- Student data will be populated here -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div id="codeModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Student Code</h2>
+        <h3 id="modalStudentName"></h3>
+        <h4 id="modalTimestamp"></h4>
+        <pre id="modalCodeContent"></pre>
+        <div id="modalAnalysisContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="teacher-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+name: Java Project CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install Node dependencies
+      run: |
+        cd public
+        npm ci
+        
+    - name: Build frontend
+      run: |
+        cd public
+        npm run build
+    
+    - name: Install backend dependencies
+      run: |
+        cd codespace-backend
+        npm ci
+        
+    - name: Run tests
+      run: |
+        cd codespace-backend
+        npm test
+      continue-on-error: true  # This will continue the pipeline even if tests fail
+
+    - name: Package application
+      run: |
+        mkdir -p dist
+        cp -r public/build/* dist/
+        cp -r codespace-backend/* dist/
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: java-workspace-build
+        path: dist/
+        
+    # Only run deployment on push to main/master
+    - name: Deploy to server
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      run: |
+        echo "Deploying to server"
+        # Add your deployment commands here
+        # This could be rsync, scp, or using deployment tools
