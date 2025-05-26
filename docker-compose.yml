@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Node.js Application
+  app:
+    build: .
+    container_name: codespace-app
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=${DB_PASSWORD:-Acharya12$}
+      - DB_NAME=codespace_db
+      - SESSION_SECRET=${SESSION_SECRET:-codespace_secret_key}
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=phi3.5
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - codespace-network
+    volumes:
+      - ./public:/app/public:ro
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: codespace-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-Acharya12$}
+      - MYSQL_DATABASE=codespace_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - codespace-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Ollama for AI Code Analysis
+  ollama:
+    image: ollama/ollama:latest
+    container_name: codespace-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - codespace-network
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 5
+        ollama pull phi3.5 || true
+        wait
+
+volumes:
+  mysql-data:
+  ollama-data:
+
+networks:
+  codespace-network:
+    driver: bridge
